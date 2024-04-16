@@ -1,0 +1,72 @@
+﻿@page "/AddMovieListView"
+@using Labb2.Shared.DTOs
+@using Labb2.Shared.Interfaces
+@inject IMovieListService<AddMovieListDto> MovieListService
+<h3>AddMovieListView</h3>
+
+<EditForm Model="NewMovieList" OnValidSubmit="AddMovieList" FormName="Name">
+
+    <MudTextField Label="Name" @bind-Value="NewMovieList.Name"></MudTextField>
+    <MudTextField Label="UserId" @bind-Value="NewMovieList.UserId"></MudTextField>
+
+    <MudButton Variant="Variant.Filled" Color="Color.Dark" ButtonType="ButtonType.Submit">Add MovieList</MudButton>
+</EditForm>
+
+<div>
+    <h1>UPDATE</h1>
+    <MudTextField Label="Name" @bind-Value="UpdateMovieListData.Name"></MudTextField>
+    <MudTextField Label="UserId" @bind-Value="UpdateMovieListData.UserId"></MudTextField>
+
+    <MudButton @onclick="UpdateMovieList" Variant="Variant.Filled" Color="Color.Warning">Update</MudButton>
+</div>
+
+<MudList Clickable="true">
+    <MudVirtualize Items="MovieLists">
+        <MudPaper Elevation="3">
+            <MudListItem OnClick="()=> {SelectMovieListToUpdate(context);}">
+                @context.Name
+                <MudButton @onclick="() => { DeleteMovieList(context); }" Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.Delete" Color="Color.Error">Delete</MudButton>
+            </MudListItem>
+
+        </MudPaper>
+
+    </MudVirtualize>
+
+
+</MudList>
+
+@code {
+    private AddMovieListDto NewMovieList { get; set; } = new();
+    private List<AddMovieListDto> MovieLists { get; set; } = new();
+    private AddMovieListDto UpdateMovieListData { get; set; } = new();
+
+    private async Task AddMovieList()
+    {
+        await MovieListService.AddMovieList(NewMovieList);
+        MovieLists.Clear();
+        MovieLists.AddRange(await MovieListService.GetAllMovieLists());
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        MovieLists.AddRange(await MovieListService.GetAllMovieLists());
+
+    }
+
+    private async Task UpdateMovieList()
+    {
+        await MovieListService.UpdateMovieList(UpdateMovieListData, UpdateMovieListData.Id);
+    }
+
+    private async Task DeleteMovieList(AddMovieListDto movieList)
+    {
+        await MovieListService.RemoveMovieList(movieList.Id);
+        MovieLists.Clear();
+        MovieLists.AddRange(await MovieListService.GetAllMovieLists());
+    }
+
+    private async Task SelectMovieListToUpdate(AddMovieListDto movieList)
+    {
+        UpdateMovieListData = movieList;
+    }
+}

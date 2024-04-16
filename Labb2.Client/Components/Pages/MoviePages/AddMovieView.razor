@@ -1,0 +1,187 @@
+﻿@page "/AddMovieView"
+@using Labb2.Shared.Interfaces
+@using Labb2.Shared.DTOs
+@inject IMovieService<MovieDto> MovieService
+@inject IGenreService<GenreDto> GenreService
+<h3>AddMovieView</h3>
+
+
+
+<EditForm Model="NewMovie" OnValidSubmit="AddMovie" FormName="Name">
+
+    <MudTextField Label="Title" @bind-Value="NewMovie.Title"></MudTextField>
+    <MudTextField Label="Description" @bind-Value="NewMovie.Description"></MudTextField>
+    <MudTextField Label="Duration" @bind-Value="NewMovie.Duration"></MudTextField>
+
+    <MudSelect @bind-Value="SelectedGenre">
+        @foreach (var genre in Genres)
+        {
+            <MudSelectItem Value="@genre">@genre.Name</MudSelectItem>
+        }
+    </MudSelect>
+
+    <MudTextField @bind-Value="GenreIds">
+    </MudTextField>
+
+    <MudTextField Label="DirectorId" @bind-Value="NewMovie.DirectorId"></MudTextField>
+    <MudTextField Label="ProductCategoryId" @bind-Value="NewMovie.ProductCategoryId"></MudTextField>
+    <MudTextField Label="Image" @bind-Value="NewMovie.PosterImageUrl"></MudTextField>
+    <MudTextField Label="ImageUrl" @bind-Value="NewMovie.BackgroundImageUrl"></MudTextField>
+    <MudButton Variant="Variant.Filled" Color="Color.Dark" ButtonType="ButtonType.Submit">Add Movie</MudButton>
+</EditForm>
+
+<div>
+    <h1>UPDATE</h1>
+    <MudTextField Label="Title" @bind-Value="UpdateMovieData.Title"></MudTextField>
+    <MudTextField Label="Description" @bind-Value="UpdateMovieData.Description"></MudTextField>
+    <MudTextField Label="Duration" @bind-Value="UpdateMovieData.Duration"></MudTextField>
+
+   @*  <MudSelect @bind-Value="SelectedGenre">
+        @foreach (var genre in Genres)
+        {
+            <MudSelectItem Value="@genre">@genre.Name</MudSelectItem>
+        }
+    </MudSelect> *@
+
+    <MudTextField @bind-Value="GenreIds">
+    </MudTextField>
+
+    <MudTextField Label="DirectorId" @bind-Value="UpdateMovieData.DirectorId"></MudTextField>
+    <MudTextField Label="ProductCategoryId" @bind-Value="UpdateMovieData.ProductCategoryId"></MudTextField>
+    <MudTextField Label="PosterImageUrl" @bind-Value="UpdateMovieData.PosterImageUrl"></MudTextField>
+    <MudTextField Label="BackgroundImageUrl" @bind-Value="UpdateMovieData.BackgroundImageUrl"></MudTextField>
+    <MudButton @onclick="UpdateMovie" Variant="Variant.Filled" Color="Color.Warning">Update</MudButton>
+</div>
+
+
+<MudList Clickable="true">
+    <MudVirtualize Items="Movies">
+        <MudPaper Elevation="3">
+            <MudListItem OnClick="()=> {SelectMovieToUpdate(context);}">
+                @context.Title
+                <MudImage Width="50" Height="50" Src="@context.PosterImageUrl" ></MudImage>
+                <MudButton @onclick="() => { DeleteMovie(context); }" Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.Delete" Color="Color.Error">Delete</MudButton>
+            </MudListItem>
+
+        </MudPaper>
+
+    </MudVirtualize>
+
+
+</MudList>
+
+@code {
+
+    private MovieDto NewMovie { get; set; } = new();
+    private List<MovieDto> Movies { get; set; } = new();
+    private List<GenreDto> Genres { get; set; } = new();
+    private string GenreIds { get; set; }
+    GenreDto SelectedGenre { get; set; }
+    public MovieDto UpdateMovieData { get; set; } = new MovieDto();
+
+    protected override async Task OnInitializedAsync()
+    {
+        Movies.AddRange(await MovieService.GetAllMovies());
+        Genres.AddRange(await GenreService.GetAllGenres());
+    }
+
+    private async Task AddMovie()
+    {
+        if (!string.IsNullOrWhiteSpace(GenreIds))
+        {
+            var genreIdsArray = GenreIds.Split(',', StringSplitOptions.RemoveEmptyEntries);
+
+            foreach (var genreIdStr in genreIdsArray)
+            {
+                if (int.TryParse(genreIdStr, out int genreId))
+                {
+                    var genre = Genres.FirstOrDefault(g => g.Id == genreId);
+                    if (genre != null)
+                    {
+                        NewMovie.GenreIds.Add(genreId);
+                    }
+                }
+            }
+        }
+
+
+        await MovieService.AddMovie(NewMovie);
+        Movies.Clear();
+        Movies.AddRange(await MovieService.GetAllMovies());
+    }
+
+
+    private async Task UpdateMovie()
+    {
+        if (!string.IsNullOrWhiteSpace(GenreIds))
+        {
+            var genreIdsArray = GenreIds.Split(',', StringSplitOptions.RemoveEmptyEntries);
+
+            foreach (var genreIdStr in genreIdsArray)
+            {
+                if (int.TryParse(genreIdStr, out int genreId))
+                {
+                    var genre = Genres.FirstOrDefault(g => g.Id == genreId);
+                    if (genre != null)
+                    {
+                        UpdateMovieData.GenreIds.Add(genreId);
+                    }
+                }
+            }
+        }
+        await MovieService.UpdateMovie(UpdateMovieData, UpdateMovieData.Id);
+    }
+
+    private async Task DeleteMovie(MovieDto movie)
+    {
+        await MovieService.RemoveMovie(movie.Id);
+        Movies.Clear();
+        Movies.AddRange(await MovieService.GetAllMovies());
+    }
+
+    private async Task SelectMovieToUpdate(MovieDto context)
+    {
+        UpdateMovieData = context;
+    }
+
+}
+
+@* <EditForm Model="departments" FormName="Name">
+    <MudSelect @bind-Value="_selectedDepartment" Label="Select Department"  Variant="Variant.Outlined"  OffsetY="true">
+
+        @foreach (var department in departments){
+            <MudSelectItem  Value="@department">@department.DepartmentName</MudSelectItem>
+        }
+    </MudSelect>
+</EditForm>
+
+<br/><br/>
+Selected Department: @_selectedDepartment?.DepartmentName
+
+@code {
+	Department _selectedDepartment;
+
+	IEnumerable<Department> departments = new List<Department>()
+	{
+		new Department() {DepartmentID = 1, DepartmentName = "Biology"},
+		new Department() {DepartmentID = 2, DepartmentName = "Physics"},
+		new Department() {DepartmentID = 3, DepartmentName = "Chemistry"},
+		new Department() {DepartmentID = 4, DepartmentName = "Mathematics"},
+		new Department() {DepartmentID = 5, DepartmentName = "Law"},
+		new Department() {DepartmentID = 6, DepartmentName = "Sociology"}
+	};
+
+	public class Department
+	{
+		public int DepartmentID { get; set; }
+		public string DepartmentName { get; set; }
+		public override bool Equals(object o) {
+			var other = o as Department;
+			return other?.DepartmentID==DepartmentID;
+		}
+		public override int GetHashCode() => DepartmentID.GetHashCode();
+		public override string ToString() {
+			return DepartmentName;
+		}
+	}
+}  *@

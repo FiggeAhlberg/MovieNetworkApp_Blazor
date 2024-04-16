@@ -1,0 +1,43 @@
+﻿﻿
+<MudLayout>
+	
+	<MudAppBar class="icon-container white" Style="z-index: 1000;">
+		<MudIconButton Icon="@Icons.Material.Filled.Menu" Color="Color.Default" Edge="Edge.Start" OnClick="@ToggleDrawer"></MudIconButton>
+	</MudAppBar>
+
+	<MudDrawer @bind-Open="@open" Breakpoint="Breakpoint.Xl" Variant="@DrawerVariant.Responsive" >
+		<MudNavMenu >
+			<MudNavLink Href="/" OnClick="@(() => CloseDrawer())">Home</MudNavLink>
+			<MudNavLink Href="/UserRegisterView" OnClick="@(() => CloseDrawer())">User Register</MudNavLink>
+			<MudNavLink Href="/UserProfileView" OnClick="@(() => { open = false; })">User Profile</MudNavLink>
+			<MudNavLink Href="/AddMovieView" OnClick="@(() => { open = false; })">Movies</MudNavLink>
+			<MudNavLink Href="/BrowseView" OnClick="@(() => { open = false; })">Browse</MudNavLink>
+			<MudNavLink Href="/AboutView" OnClick="@(() => { open = false; })">About</MudNavLink>
+			<MudNavLink Href="/AddDirectorView" OnClick="@(() => { open = false; })">Director</MudNavLink>
+			<MudNavLink Href="/AddMovieListView" OnClick="@(() => { open = false; })">MovieList</MudNavLink>
+
+		</MudNavMenu>
+	</MudDrawer>
+	
+	<div style="padding-top: 64px;"> <!-- Assuming the height of the MudAppBar is 64px -->
+		<!-- Your content here -->
+	</div>
+	
+
+</MudLayout>
+
+
+@code{
+	bool open = false;
+	
+
+	void ToggleDrawer()
+	{
+		open = !open;
+	}
+
+	void CloseDrawer()
+	{
+		open = false;
+	}
+}

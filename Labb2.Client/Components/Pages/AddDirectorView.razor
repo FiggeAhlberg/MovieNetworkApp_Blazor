@@ -1,0 +1,76 @@
+﻿@page "/AddDirectorView"
+@using Labb2.Shared.Interfaces
+@using Labb2.Shared.DTOs
+@inject IDirectorService<DirectorDto> DirectorService
+<h3>AddDirectorView</h3>
+
+
+<EditForm Model="NewDirector" OnValidSubmit="AddDirector" FormName="Name">
+
+    <MudTextField Label="Firstname" @bind-Value="NewDirector.FirstName"></MudTextField>
+    <MudTextField Label="Lastname" @bind-Value="NewDirector.LastName"></MudTextField>
+    <MudDatePicker Label="BirthDate" @bind-Value="NewDirector.BirthDate" />
+    
+    <MudButton Variant="Variant.Filled" Color="Color.Dark" ButtonType="ButtonType.Submit">Add Director</MudButton>
+</EditForm>
+
+<div>
+    <h1>UPDATE</h1>
+    <MudTextField Label="Firstname" @bind-Value="UpdateDirectorData.FirstName"></MudTextField>
+    <MudTextField Label="Lastname" @bind-Value="UpdateDirectorData.LastName"></MudTextField>
+    <MudDatePicker Label="BirthDate" @bind-Value="UpdateDirectorData.BirthDate" />
+
+    <MudButton @onclick="UpdateDirector" Variant="Variant.Filled" Color="Color.Warning">Update</MudButton>
+</div>
+
+<MudList Clickable="true">
+    <MudVirtualize Items="Directors">
+        <MudPaper Elevation="3">
+            <MudListItem OnClick="()=> {SelectDirectorToUpdate(context);}">
+                @context.FirstName
+                @context.LastName
+                <MudButton @onclick="() => { DeleteDirector(context); }" Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.Delete" Color="Color.Error">Delete</MudButton>
+            </MudListItem>
+
+        </MudPaper>
+
+    </MudVirtualize>
+
+
+</MudList>
+
+@code {
+    private DirectorDto NewDirector { get; set; } = new();
+    private List<DirectorDto> Directors { get; set; } = new();
+    private DirectorDto UpdateDirectorData { get; set; } = new();
+
+    private async Task AddDirector()
+    {
+        await DirectorService.AddDirector(NewDirector);
+        Directors.Clear();
+        Directors.AddRange(await DirectorService.GetAllDirectors());
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        Directors.AddRange(await DirectorService.GetAllDirectors());
+        
+    }
+
+    private async Task UpdateDirector()
+    {
+        await DirectorService.UpdateDirector(UpdateDirectorData, UpdateDirectorData.Id);
+    }
+
+    private async Task DeleteDirector(DirectorDto director)
+    {
+        await DirectorService.RemoveDirector(director.Id);
+        Directors.Clear();
+        Directors.AddRange(await DirectorService.GetAllDirectors());
+    }
+
+    private async Task SelectDirectorToUpdate(DirectorDto director)
+    {
+        UpdateDirectorData = director;
+    }
+}

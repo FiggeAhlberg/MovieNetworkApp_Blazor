@@ -1,0 +1,43 @@
+﻿@page "/UserRegisterView"
+@rendermode InteractiveServer
+@using Labb2.Shared.DTOs
+@using Labb2.Shared.Interfaces
+@inject IUserService<UserDto> UserService
+<h3>UserRegisterView</h3>
+
+<EditForm Model="NewUser" OnValidSubmit="AddUser" FormName="MittForm">
+	<MudTextField Label="Firstname" @bind-Value="NewUser.FirstName"></MudTextField>
+	<MudTextField Label="Lastname" @bind-Value="NewUser.LastName"></MudTextField>
+	<MudTextField Label="Username" @bind-Value="NewUser.UserName"></MudTextField>
+	<MudTextField Label="Email" @bind-Value="NewUser.Email"></MudTextField>
+	<MudTextField Label="Password" @bind-Value="NewUser.Password"></MudTextField>
+	<MudButton Variant="Variant.Filled" Color="Color.Dark" ButtonType="ButtonType.Submit">Register</MudButton>
+</EditForm>
+
+<MudList>
+	<MudVirtualize Items="Users">
+		<MudPaper  Elevation="3">
+			<MudListItem>@context.UserName</MudListItem>
+		</MudPaper>
+	</MudVirtualize>
+</MudList>
+
+@code {
+
+	private UserDto NewUser { get; set; } = new();
+	private List<UserDto> Users { get; set; } = new();
+
+	protected override async Task OnInitializedAsync()
+	{
+		Users.AddRange(await UserService.GetAllUsers());
+	}
+
+	private async Task AddUser()
+	{
+		await UserService.AddUser(NewUser);
+		Users.Clear();
+		Users.AddRange(await UserService.GetAllUsers());
+	}
+
+
+}

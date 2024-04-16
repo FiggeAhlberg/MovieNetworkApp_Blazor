@@ -1,0 +1,98 @@
+﻿@page "/MovieInfoView/{MovieId}"
+@using Labb2.Shared.DTOs
+@using Labb2.Shared.Interfaces
+@inject IMovieService<MovieDto> MovieService
+@inject IGenreService<GenreDto> GenreService
+
+
+<div class="background-image-movie-info">
+	<div class="background-image" style="background-image: url('@Movie.BackgroundImageUrl')"></div>
+	<div class="movie-info-container  d-flex flex-column">
+		<div class="movie-info  d-flex flex-column justify-center align-self-center mt-16 ">
+			<MudList Class="d-flex justify-center flex-row gap-0" Style="@($"color:{Colors.Shades.White};")">
+				<MudListItem>
+					<MudImage Class="rounded-lg" Src="@Movie.PosterImageUrl" ObjectPosition="ObjectPosition.Center" ObjectFit="ObjectFit.Fill" Height="210" Width="150"></MudImage>
+				</MudListItem>
+
+				<MudStack Class="d-flex flex-column justify-between " >
+					<MudListItem Class="justify-start">
+						<MudText style="text-transform: uppercase; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" Typo="Typo.h4">@Movie.Title</MudText>
+
+					</MudListItem>
+					<MudListItem Style="width: 300px;" >
+								<MudText style="  overflow: hidden; text-overflow: ellipsis;"> @Movie.Description</MudText>
+					</MudListItem>
+					
+				</MudStack>
+
+
+			</MudList>
+
+
+		</div>
+		<MudContainer Class="d-flex justify-center align-self-center" MaxWidth="MaxWidth.Small">
+			<MudStack Class="align-self-center justify-center" Style="@($"color:{Colors.Shades.White};")">
+				<MudListItem>
+					@foreach (var genre in Genres)
+					{
+						<span>@genre.Name</span>
+						<br/>
+					}
+				</MudListItem>
+				
+				@* Add Movie to Movielist *@
+				<MudListItem Class="align-self-center ">
+					<MudButton Variant="Variant.Outlined" Class="rounded-pill" Style="color: white; border-color: white;">Add To Watchlist</MudButton>
+				</MudListItem>
+
+
+			</MudStack>
+		</MudContainer>
+
+	</div>
+
+
+</div>
+
+
+	<div>
+		
+	</div>
+
+
+
+
+@code {
+	[Parameter]
+	public string MovieId { get; set; }
+
+	private MovieDto Movie { get; set; } = new();
+
+	public string GenreId { get; set; }
+
+	private List<GenreDto> Genres { get; set; } = new();
+
+	protected override async Task OnInitializedAsync()
+	{
+		// Retrieve movie details based on the provided movie ID
+		Movie = await MovieService.GetMovieById(int.Parse(MovieId));
+
+		if (Movie is null)
+		{
+			return;
+		}
+
+		foreach (var genreId in Movie.GenreIds)
+		{
+			Genres.Add(await GenreService.GetGenreById(genreId));
+		}
+	}
+
+	private async Task GetGenresById()
+	{
+		
+	}
+
+
+
+}

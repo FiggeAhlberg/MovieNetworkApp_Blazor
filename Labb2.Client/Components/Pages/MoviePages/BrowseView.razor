@@ -1,0 +1,58 @@
+﻿@page "/BrowseView"
+@using Labb2.Shared.DTOs
+@using Labb2.Shared.Interfaces
+@using Labb2.Client.Services
+@inject IGenreService<GenreDto> GenreService
+@inject IMovieService<MovieDto> MovieService
+<h3>BrowseView</h3>
+
+
+<div class="filter-section">
+	<MudSelect @bind-Value="SelectedGenre">
+		@foreach (var genre in Genres)
+		{
+				<MudSelectItem  Value="@genre" >@genre.Name</MudSelectItem>
+		}
+	</MudSelect>
+	<MudTextField Label="Search" @bind-Value="SearchTitle" Variant="Variant.Text"></MudTextField>
+	
+	
+</div>
+
+<div class="d-flex flex-column justify-center mt-16 mb-16">
+
+    <MudList Class="d-flex align-self-center flex-row gap-4">
+
+        @foreach (var movie in Movies)
+        {
+            <MudListItem>
+					
+                <MudNavLink Href="@($"/MovieInfoView/{movie.Id}")">
+                    <MudImage Class="rounded-lg" Src="@movie.PosterImageUrl" ObjectPosition="ObjectPosition.Center" ObjectFit="ObjectFit.Fill" Height="210" Width="150"></MudImage>
+                </MudNavLink>
+            </MudListItem>
+        }
+
+    </MudList>
+</div>
+
+
+@code
+{
+	public string SearchTitle { get; set; }
+	public List<string> Images { get; set; } = new();
+	public List<GenreDto> Genres { get; set; } = new();
+    public List<MovieDto> Movies { get; set; } = new();
+	public GenreDto SelectedGenre { get; set; }
+
+	
+
+	
+
+	protected override async Task OnInitializedAsync()
+	{
+		Genres.AddRange(await GenreService.GetAllGenres());
+		Movies.AddRange(await MovieService.GetAllMovies());
+
+	}
+}

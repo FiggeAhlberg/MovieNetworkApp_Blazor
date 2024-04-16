@@ -1,0 +1,67 @@
+﻿@page "/AboutView"
+@using Labb2.Shared.Interfaces
+@using Labb2.Shared.DTOs
+@inject IMovieService<MovieDto> MovieService
+
+
+@* <div  style="width: 100%; height: 700px; ">
+	<MudImage Style="width: 100%; height: auto; object-fit: cover; object-position: bottom;" Src="images/poorthing_pig.jpg"></MudImage>
+	</div> *@
+
+<div style="width: 100%; height: 700px; overflow: hidden; position: relative;">
+	<img style="width: 100%; height: 100%; object-fit: cover; object-position: center center; filter: brightness(0.8)" src="images/poorthing_pig.jpg" alt="Poor Thing Pig">
+	<div  style=" position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);  text-align: center; color: white; font-family: Objectivity;  white-space: nowrap; width: 80%;">
+		<MudText  style="text-transform: uppercase;  font-family: Objectivity;" Typo="Typo.h2" >We are a film community</MudText>
+	</div>
+</div>
+
+<div>
+	<MudText Class="d-flex justify-center mt-16" Style="font-family: Objectivity;" Typo="Typo.h3">FILMS</MudText>
+	<div class="d-flex justify-center">
+		<MudList Class="d-flex flex-row gap-0">
+			@foreach (var movie in Movies)
+			{
+				<MudListItem>
+					<MudImage Width="300" Height="400" ObjectFit="ObjectFit.Fill" Src="images/parasite.jpg"></MudImage>
+				</MudListItem>
+			}
+			
+		</MudList>
+		
+		
+	</div>
+</div>
+
+<div style=" width: 800px; margin: 0 auto; display: flex; align-items: center; justify-content: center;">
+	<MudCarousel Style="width: inherit; height: 500px;" Class="d-flex justify-content-center" TData="object" AutoCycle="true" ShowBullets="false" ShowArrows="false">
+		@foreach (var movie in Movies)
+		{
+			<MudCarouselItem Transition="Transition.Fade">
+				
+				<img style="width: 100%; height: 100%; position: relative; object-fit: cover; object-position: center center; " src="@movie.BackgroundImageUrl">
+					<MudText Class=" position: absolute; bottom: 50%; color: white;">@movie.Title</MudText>
+				@* 				<MudImage Width="800" ObjectFit="ObjectFit.Cover" ObjectPosition="ObjectPosition.Center" Src="@movie.BackgroundImageUrl"></MudImage>
+ *@
+			</MudCarouselItem>
+		}
+		
+	</MudCarousel>
+</div>
+
+
+
+@code {
+
+	private List<MovieDto> Movies { get; set; } = new();
+
+	protected override Task OnInitializedAsync()
+	{
+		return	GetAllMovies();
+	}
+
+	private async Task GetAllMovies()
+	{
+		Movies.AddRange(await MovieService.GetAllMovies());
+	}
+	
+}

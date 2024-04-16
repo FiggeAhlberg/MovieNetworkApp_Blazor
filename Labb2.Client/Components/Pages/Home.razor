@@ -1,0 +1,108 @@
+﻿@page "/"
+@using Labb2.Shared.DTOs
+@using Labb2.Shared.Interfaces
+@inject IMovieService<MovieDto> MovieService
+
+<PageTitle>Home</PageTitle>
+
+@* <style>
+	.backgroundImage {
+		width: 100%;
+		background-image: url('images/stalker.jpg');
+		background-size: cover;
+		background-position: center;
+		background-repeat: no-repeat;
+	}
+
+
+</style> *@
+
+<div class="d-flex justify-center">
+	<MudImage class="backgroundImage" Fluid="true"  Src="images/stalker.jpg"></MudImage>
+</div>
+
+<div class="d-flex flex-column justify-center mt-16 mb-16">
+	
+	<MudText Class="d-flex align-self-center"  Typo="Typo.h2" >FEATURED MOVIES</MudText>
+
+	<MudList Class="d-flex align-self-center flex-row gap-4 ">
+
+		@foreach (var movie in Movies)
+		{
+			<MudListItem>
+					
+					<MudNavLink Style="background: none; padding: 0; overflow: hidden;padding: 0;
+        margin: 0;" Href="@($"/MovieInfoView/{movie.Id}")">
+					<MudImage Class="rounded-lg" Src="@movie.PosterImageUrl" ObjectPosition="ObjectPosition.Center" ObjectFit="ObjectFit.Fill" Height="210" Width="150"></MudImage>
+				</MudNavLink>
+			</MudListItem>
+		}
+
+	</MudList>
+</div>
+
+<div>
+	<div class="d-flex flex-row justify-center" style="width: 100%; height:500px; background-color: @Colors.Grey.Lighten2;" >
+		
+		<MudImage Class="align-self-center mr-16" Src="images/leon_character.png"  Style="height: 300px; width: auto;"></MudImage>
+		<MudStack Class="align-self-center ml-16">
+			<MudText Style="font-weight:bold;" Typo="Typo.h4">CINEMA</MudText>
+			<MudText Style="font-weight:bold;" Typo="Typo.h4">CINEMA</MudText>
+			<MudText Style="font-weight:bold;" Typo="Typo.h4">CINEMA</MudText>
+		</MudStack>
+		
+		
+	</div>
+</div>
+
+<div style=" width: 800px; margin: 0 auto; display: flex; align-items: center; justify-content: center;" class="mt-16 mb-16">
+	<MudCarousel Style="width: inherit; height: 500px;" Class="d-flex justify-content-center" TData="object" AutoCycle="true" ShowBullets="false" ShowArrows="false">
+		@foreach (var movie in Movies)
+		{
+			<MudCarouselItem Transition="Transition.Fade">
+				
+					
+					<img style="width: 100%; height: 100%; object-fit: cover; object-position: center center; " src="@movie.BackgroundImageUrl">
+				
+			</MudCarouselItem>
+		}
+		
+	</MudCarousel>
+</div>
+
+
+<div style="position: relative; ">
+	<MudImage  Style="width:100%; height:auto; filter: brightness(0.7);" Src="images/a_space_odyssey_red.png"></MudImage>
+	<div class="ml-16" style=" position: absolute; bottom: 12%;  text-align: start; color: white; font-family: Objectivity; ">
+		<MudText style="text-transform: uppercase;  font-family: Objectivity;" Typo="Typo.h3" >JOIN A THRIVING COMMUNITY OF MOVIE ENTHUSIASTS.</MudText>
+		<MudText style="text-transform: uppercase;  font-family: Objectivity;" Typo="Typo.h3" >DISCOVER THE MAGIC OF CINEMA.</MudText>
+	</div>
+	
+</div>
+
+
+
+
+<div class="d-flex justify-start ml-16 mt-16" style="width: 100%; height:200px; ">
+	<MudStack>
+		<MudText style="text-transform: uppercase;  font-family: Objectivity; color: dark-grey;" Typo="Typo.h4">WATCH INCREDIBLE FILM</MudText>
+		<MudText style= "font-family: arial;color: grey;" Typo="Typo.subtitle1">Enjoy the art of cinema together with a big community</MudText>
+		<MudButton Href="/UserRegisterView" Class="rounded-sm" Style="width:200px; height: 50px;" DisableElevation="true" Variant="Variant.Filled" Color="Color.Error">
+			<MudText Typo="Typo.h5" Style="font-family: Objectivity;">REGISTER</MudText>
+		</MudButton>
+	</MudStack>
+	
+</div>
+
+@code
+{
+	
+	public List<MovieDto> Movies { get; set; } = new();
+
+	
+
+	protected override async Task OnInitializedAsync()
+	{
+		Movies.AddRange(await MovieService.GetAllMovies());
+	}
+}

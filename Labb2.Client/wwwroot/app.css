@@ -1,0 +1,49 @@
+@font-face{
+    font-family: "Objectivity";
+    src: url('fonts/Objectivity/Objectivity-Bold.otf');
+}
+
+.backgroundImage {
+    width: 100%;
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    height:auto;
+    filter: brightness(0.8);
+}
+
+.background-image-movie-info {
+   
+  position: relative; 
+
+}
+
+.background-image {
+    width: 100%;
+    height: 100%;
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    filter: brightness(0.6); /* Adjust the brightness value as needed */
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: -1; /* Ensure the image stays behind the content */
+}
+
+.movie-info-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh; /* Ensure container takes up full viewport height */
+}
+
+.movie-info{
+    width: 400px;
+    text-align:start;
+    
+
+}
+
+
+
