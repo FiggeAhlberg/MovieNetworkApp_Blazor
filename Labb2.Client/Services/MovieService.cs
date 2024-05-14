@@ -26,6 +26,8 @@ public class MovieService : IMovieService<MovieDto>
 		return result ?? Enumerable.Empty<MovieDto>();
 	}
 
+	
+
 	public async Task<MovieDto?> GetMovieById(int id)
 	{
 		var response = await _httpClient.GetAsync($"/movies/{id}");
@@ -51,6 +53,7 @@ public class MovieService : IMovieService<MovieDto>
 		var result = await response.Content.ReadFromJsonAsync<MovieDto>();
 		return result;
 	}
+
 
 
 	public async Task AddMovie(MovieDto newMovie)

@@ -19,9 +19,13 @@ public class MovieRepository : IMovieService<Movie>
         return _context.Movies;
     }
 
-   
+	public Task<IEnumerable<Movie>> GetMovieFromTmdb()
+	{
+		throw new NotImplementedException();
+	}
 
-    public async Task<Movie> GetMovieById(int id)
+
+	public async Task<Movie> GetMovieById(int id)
     {
         return await _context.Movies.FirstOrDefaultAsync(m => m.Id == id);
     }

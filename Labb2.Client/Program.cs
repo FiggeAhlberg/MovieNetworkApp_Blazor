@@ -22,6 +22,7 @@ builder.Services.AddScoped<IMovieService<MovieDto>, MovieService>();
 builder.Services.AddScoped<IGenreService<GenreDto>,  GenreService>();
 builder.Services.AddScoped<IDirectorService<DirectorDto>,  DirectorService>();
 builder.Services.AddScoped<IMovieListService<AddMovieListDto>,  MovieListService>();
+builder.Services.AddScoped<ITmdbService<TmdbMovieDto>, TmdbService>();
 
 
 var app = builder.Build();
